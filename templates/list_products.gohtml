@@ -1,0 +1,89 @@
+{{define "list-products"}}
+<div class="columns">
+  <div class="column is-one-quarter">
+    <form method="GET" action="/" class="box">
+      <div class="field">
+        <label class="label">Product Name</label>
+        <div class="control">
+          <input
+            class="input"
+            type="text"
+            name="product_name"
+            placeholder="Product Name"
+          />
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Category</label>
+        <div class="control">
+          <div class="select">
+            <select name="category_id">
+              <option value="">All Categories</option>
+              {{
+                range.Categories
+              }}
+              <option value="{{.ID}}">{{.CategoryName}}</option>
+              {{
+                end
+              }}
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Status</label>
+        <div class="control">
+          <div class="select">
+            <select name="status">
+              <option value="">All Status</option>
+              <option value="true">Active</option>
+              <option value="false">Inactive</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="field is-grouped">
+        <div class="control">
+          <button class="button is-link" type="submit">Filter</button>
+        </div>
+        <div class="control">
+          <a class="button is-light" href="/list">Reset</a>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="column">
+    <h1 class="title">Product List</h1>
+    <table class="table is-fullwidth is-striped">
+      <thead>
+        <tr>
+          <th>Product ID</th>
+          <th>Product Name</th>
+          <th>Unit Price</th>
+          <th>Unit</th>
+          <th>Weight</th>
+          <th>Category</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{
+          range.Products
+        }}
+        <tr>
+          <td>{{.ID}}</td>
+          <td>{{.ProductName}}</td>
+          <td>{{.UnitPrice}}</td>
+          <td>{{.Unit}}</td>
+          <td>{{.Weight}}</td>
+          <td>{{.CategoryID}}</td>
+          <td>{{if .Status}}Active{{else}}Inactive{{ end }}</td>
+        </tr>
+        {{
+          end
+        }}
+      </tbody>
+    </table>
+  </div>
+</div>
+{{ end }}

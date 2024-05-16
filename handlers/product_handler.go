@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"database/sql"
-	"encoding/json"
 	"net/http"
 	"product_app/models"
 	"product_app/utils"
+	"strconv"
 )
 
 type ProductHandler struct {
@@ -48,19 +48,23 @@ func (h *ProductHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := struct {
+		Title      string
+		Template   string
 		Products   []models.Product
 		Categories []models.ProductCategory
 	}{
+		Title:      "Product List",
+		Template:   "list-products",
 		Products:   products,
 		Categories: categories,
 	}
 
-	utils.RenderTemplate(w, "list_products.html", data)
+	utils.RenderTemplate(w, "base.gohtml", data)
 }
 
-func (h *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
-	var products []models.Product
-	rows, err := h.DB.Query("SELECT * FROM products")
+func (h *ProductHandler) ShowAddProductPage(w http.ResponseWriter, r *http.Request) {
+	var categories []models.ProductCategory
+	rows, err := h.DB.Query("SELECT * FROM product_categories")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -68,23 +72,35 @@ func (h *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var p models.Product
-		if err := rows.Scan(&p.ID, &p.ProductName, &p.UnitPrice, &p.Unit, &p.Weight, &p.CategoryID, &p.Status); err != nil {
+		var c models.ProductCategory
+		if err := rows.Scan(&c.ID, &c.CategoryName); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		products = append(products, p)
+		categories = append(categories, c)
 	}
 
-	json.NewEncoder(w).Encode(products)
+	data := struct {
+		Title      string
+		Template   string
+		Categories []models.ProductCategory
+	}{
+		Title:      "Add Product",
+		Template:   "add-product",
+		Categories: categories,
+	}
+
+	utils.RenderTemplate(w, "base.gohtml", data)
 }
 
 func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	var p models.Product
-	if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+	p.ProductName = r.FormValue("product_name")
+	p.UnitPrice, _ = strconv.ParseFloat(r.FormValue("unit_price"), 64)
+	p.Unit = r.FormValue("unit")
+	p.Weight, _ = strconv.ParseFloat(r.FormValue("weight"), 64)
+	p.CategoryID, _ = strconv.Atoi(r.FormValue("category_id"))
+	p.Status = r.FormValue("status") == "true"
 
 	sqlStatement := `INSERT INTO products (product_name, unit_price, unit, weight, category_id, status) VALUES ($1, $2, $3, $4, $5, $6)`
 	_, err := h.DB.Exec(sqlStatement, p.ProductName, p.UnitPrice, p.Unit, p.Weight, p.CategoryID, p.Status)
@@ -93,5 +109,5 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
