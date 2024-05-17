@@ -64,6 +64,10 @@ func (d *Database) RunMigrations(migrationPath string) error {
 		return err
 	}
 
+	if err := m.Down(); err != nil && err != migrate.ErrNoChange {
+		return err
+	}
+
 	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
 		return err
 	}

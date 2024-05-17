@@ -20,22 +20,10 @@ func main() {
 	defer db.Close()
 
 	// Run migrations
-	// err = db.RunMigrations("file://db/migrations")
-	// if err != nil {
-	// 	log.Fatalf("Failed to run migrations: %v", err)
-	// }
-
-	// Insert mock data
-	err = utils.InsertMockData(db.DB)
+	err = db.RunMigrations("file://db/migrations")
 	if err != nil {
-		log.Fatalf("Failed to insert mock data: %v", err)
+		log.Fatalf("Failed to run migrations: %v", err)
 	}
-
-	// Delete all data
-	// err = utils.DeleteMockData(db.DB)
-	// if err != nil {
-	// 	log.Fatalf("Failed to remove mock data: %v", err)
-	// }
 
 	router := mux.NewRouter()
 	productHandler := &handlers.ProductHandler{DB: db.DB}
