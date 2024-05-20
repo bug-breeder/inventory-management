@@ -85,6 +85,7 @@ func (h *ProductHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var p models.Product
 		if err := rows.Scan(&p.ID, &p.ProductName, &p.UnitPrice, &p.Unit, &p.Weight, &p.CategoryID, &p.Status); err != nil {
+			log.Printf("Error scanning product: %v\n", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -193,8 +194,9 @@ func (h *ProductHandler) ShowEditProductPage(w http.ResponseWriter, r *http.Requ
 	}
 
 	var product models.Product
-	err = h.DB.QueryRow("SELECT * FROM products WHERE id = $1", id).Scan(&product.ID, &product.ProductName, &product.UnitPrice, &product.Unit, &product.Weight, &product.CategoryID, &product.Status)
+	err = h.DB.QueryRow("SELECT id, product_name, unit_price, unit, weight, category_id, status from products WHERE id = $1", id).Scan(&product.ID, &product.ProductName, &product.UnitPrice, &product.Unit, &product.Weight, &product.CategoryID, &product.Status)
 	if err != nil {
+		log.Printf("Error querying product: %v\n", err)
 		if err == sql.ErrNoRows {
 			http.NotFound(w, r)
 			return
