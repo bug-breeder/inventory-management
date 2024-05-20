@@ -1,0 +1,97 @@
+{{define "edit-product"}}
+<h1 class="title">{{.Title}}</h1>
+<form method="POST" action="/edit-product/{{.Product.ID}}" class="box">
+  <input type="hidden" name="_method" value="PATCH" />
+
+  <div class="field">
+    <label class="label">Product Name</label>
+    <div class="control">
+      <input
+        class="input"
+        type="text"
+        name="product_name"
+        value="{{.Product.ProductName}}"
+        required
+      />
+    </div>
+  </div>
+  <div class="field">
+    <label class="label">Unit Price</label>
+    <div class="control">
+      <input
+        class="input"
+        type="number"
+        name="unit_price"
+        value="{{.Product.UnitPrice}}"
+        step="0.01"
+        required
+      />
+    </div>
+  </div>
+  <div class="field">
+    <label class="label">Unit</label>
+    <div class="control">
+      <input
+        class="input"
+        type="text"
+        name="unit"
+        value="{{.Product.Unit}}"
+        required
+      />
+    </div>
+  </div>
+  <div class="field">
+    <label class="label">Weight</label>
+    <div class="control">
+      <input
+        class="input"
+        type="number"
+        step="0.01"
+        name="weight"
+        value="{{.Product.Weight}}"
+        required
+      />
+    </div>
+  </div>
+  <div class="field">
+    <label class="label">Category</label>
+    <div class="control">
+      <div class="select">
+        <select name="category_id" required>
+          {{range .Categories}}
+          <option
+            value="{{.ID}}"
+            {{if
+            eq
+            .ID
+            $.Product.CategoryID}}selected{{end}}
+          >
+            {{.CategoryName}}
+          </option>
+          {{end}}
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="field">
+    <label class="label">Status</label>
+    <div class="control">
+      <div class="select">
+        <select name="status" required>
+          <option value="true" {{if .Product.Status}}selected{{end}}>
+            Active
+          </option>
+          <option value="false" {{if not .Product.Status}}selected{{end}}>
+            Inactive
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="field">
+    <div class="control">
+      <button class="button is-link" type="submit">Save Changes</button>
+    </div>
+  </div>
+</form>
+{{end}}

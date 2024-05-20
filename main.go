@@ -26,14 +26,22 @@ func main() {
 	}
 
 	router := mux.NewRouter()
+	// Use the MethodOverride middleware to override PUT/PATCH
+	router.Use(utils.MethodOverride)
+	// Log all requests
+	router.Use(utils.LoggingMiddleware)
+
 	productHandler := &handlers.ProductHandler{DB: db.DB}
 	categoryHandler := &handlers.CategoryHandler{DB: db.DB}
 
+	router.HandleFunc("/", productHandler.ListProducts).Methods("GET")
 	router.HandleFunc("/products", productHandler.CreateProduct).Methods("POST")
 	router.HandleFunc("/categories", categoryHandler.GetCategories).Methods("GET")
 	router.HandleFunc("/add-product", productHandler.ShowAddProductPage).Methods("GET")
 	router.HandleFunc("/add-product", productHandler.CreateProduct).Methods("POST")
-	router.HandleFunc("/", productHandler.ListProducts).Methods("GET")
+	router.HandleFunc("/edit-product/{id}", productHandler.ShowEditProductPage).Methods("GET")
+	router.HandleFunc("/edit-product/{id}", productHandler.EditProduct).Methods("POST")
+	// router.HandleFunc("/edit-product/{id}" /* do nothing*/, func(w http.ResponseWriter, r *http.Request) { fmt.Println("Do nothing") }).Methods("POST")
 
 	log.Println("Starting server on :8080")
 	log.Fatal(http.ListenAndServe(":8080", router))

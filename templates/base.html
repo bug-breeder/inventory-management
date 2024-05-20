@@ -7,6 +7,9 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
     />
+      <!-- Font Awesome icons -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0-beta3/css/all.css" />
+
   </head>
   <body>
     <nav class="navbar" role="navigation" aria-label="main navigation">
@@ -29,6 +32,8 @@
       <div class="container">
         {{if eq .Template "add-product"}}
           {{template "add-product" .}}
+        {{else if eq .Template "edit-product"}}
+          {{template "edit-product" .}}
         {{else if eq .Template "list-products"}}
           {{template "list-products" .}}
         {{else}}

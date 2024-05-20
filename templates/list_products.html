@@ -19,13 +19,9 @@
           <div class="select">
             <select name="category_id">
               <option value="">All Categories</option>
-              {{
-                range.Categories
-              }}
+              {{ range.Categories }}
               <option value="{{.ID}}">{{.CategoryName}}</option>
-              {{
-                end
-              }}
+              {{ end }}
             </select>
           </div>
         </div>
@@ -64,12 +60,11 @@
           <th>Weight</th>
           <th>Category</th>
           <th>Status</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody>
-        {{
-          range.Products
-        }}
+        {{ range.Products }}
         <tr>
           <td>{{.ID}}</td>
           <td>{{.ProductName}}</td>
@@ -78,10 +73,13 @@
           <td>{{.Weight}}</td>
           <td>{{.CategoryID}}</td>
           <td>{{if .Status}}Active{{else}}Inactive{{ end }}</td>
+          <td>
+            <a href="/edit-product/{{.ID}}" class="button is-small is-info"
+              ><i class="fas fa-edit"></i
+            ></a>
+          </td>
         </tr>
-        {{
-          end
-        }}
+        {{ end }}
       </tbody>
     </table>
   </div>
