@@ -67,9 +67,6 @@ func (h *ProductHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
-	// TODO: delete this
-	log.Printf("Rows: %+v\n", rows)
-
 	var products []models.Product
 	for rows.Next() {
 		var p models.Product
@@ -79,10 +76,6 @@ func (h *ProductHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
 		}
 		products = append(products, p)
 	}
-
-	// log the products
-	// TODO: delete this
-	log.Printf("Products: %+v\n", products)
 
 	var categories []models.ProductCategory
 	rows, err = h.DB.Query("SELECT id, category_name FROM product_categories")
@@ -121,9 +114,6 @@ func (h *ProductHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
 	data.Filters.ProductName = productName
 	data.Filters.CategoryID = categoryIDStr
 	data.Filters.Status = statusStr
-
-	// TODO: delete this
-	log.Printf("Data: %+v\n", data)
 
 	utils.RenderTemplate(w, "base.html", data)
 }
