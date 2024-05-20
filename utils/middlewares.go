@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// Override the HTTP method in case the client does not support the method
 func MethodOverride(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
