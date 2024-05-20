@@ -7,7 +7,7 @@ INSERT INTO product_categories (id, category_name) VALUES (3, 'Văn phòng phẩ
 INSERT INTO products (product_name, unit_price, unit, weight, category_id, status) VALUES
 ('Laptop Acer Swift 3', 699.99, 'cái', 2.0, 1, true) ON CONFLICT DO NOTHING;
 INSERT INTO products (product_name, unit_price, unit, weight, category_id, status) VALUES
-('Pc Phong Vũ 1', 1299.99, 'cái', 10, 1, true) ON CONFLICT DO NOTHING;
+('Pc Phong Vũ', 1299.99, 'cái', 10, 1, true) ON CONFLICT DO NOTHING;
 INSERT INTO products (product_name, unit_price, unit, weight, category_id, status) VALUES
 ('Aó khoác nam', 9.99, 'cái', 0.2, 2, true) ON CONFLICT DO NOTHING;
 INSERT INTO products (product_name, unit_price, unit, weight, category_id, status) VALUES
