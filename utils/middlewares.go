@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -10,11 +9,11 @@ import (
 func MethodOverride(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
-			fmt.Printf("Current method is %s, override to %s\n", r.Method, r.FormValue("_method"))
+			log.Printf("Current method is %s, override to %s\n", r.Method, r.FormValue("_method"))
 			if method := r.FormValue("_method"); method != "" {
 				r.Method = method
 			}
-			fmt.Printf("New method is %s\n", r.Method)
+			log.Printf("New method is %s\n", r.Method)
 		}
 		next.ServeHTTP(w, r)
 	})

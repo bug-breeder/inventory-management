@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"database/sql"
+	"log"
 	"net/http"
 	"product_app/models"
 	"product_app/utils"
@@ -15,14 +16,61 @@ type ProductHandler struct {
 }
 
 func (h *ProductHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
-	var products []models.Product
-	rows, err := h.DB.Query("SELECT * FROM products")
+	// Read query parameters
+	productName := r.URL.Query().Get("product_name")
+	categoryIDStr := r.URL.Query().Get("category_id")
+	statusStr := r.URL.Query().Get("status")
+
+	// Construct the base query
+	query := `SELECT id, product_name, unit_price, unit, weight, category_id, status FROM products WHERE 1=1`
+	var args []interface{}
+	var conditions []string
+
+	// Add conditions based on the provided filters
+	if productName != "" {
+		conditions = append(conditions, "product_name ILIKE $")
+		args = append(args, "%"+productName+"%")
+	}
+	if categoryIDStr != "" {
+		categoryID, err := strconv.Atoi(categoryIDStr)
+		if err != nil {
+			log.Printf("Error converting category_id to int: %v\n", err)
+		} else {
+			conditions = append(conditions, "category_id = $")
+			args = append(args, categoryID)
+		}
+	}
+	if statusStr != "" {
+		status, err := strconv.ParseBool(statusStr)
+		if err != nil {
+			log.Printf("Error converting status to bool: %v\n", err)
+		} else {
+			conditions = append(conditions, "status = $")
+			args = append(args, status)
+		}
+	}
+
+	// Combine the base query with the conditions
+	if len(conditions) > 0 {
+		for i, condition := range conditions {
+			query += " AND " + condition + strconv.Itoa(i+1)
+		}
+	}
+
+	rows, err := h.DB.Query(query, args...)
 	if err != nil {
+		log.Printf("Error querying products: %v\n", err)
+		log.Printf("Query: %s\n", query)
+		log.Printf("Args: %+v\n", args)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	defer rows.Close()
 
+	// TODO: delete this
+	log.Printf("Rows: %+v\n", rows)
+
+	var products []models.Product
 	for rows.Next() {
 		var p models.Product
 		if err := rows.Scan(&p.ID, &p.ProductName, &p.UnitPrice, &p.Unit, &p.Weight, &p.CategoryID, &p.Status); err != nil {
@@ -32,8 +80,12 @@ func (h *ProductHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
 		products = append(products, p)
 	}
 
+	// log the products
+	// TODO: delete this
+	log.Printf("Products: %+v\n", products)
+
 	var categories []models.ProductCategory
-	rows, err = h.DB.Query("SELECT * FROM product_categories")
+	rows, err = h.DB.Query("SELECT id, category_name FROM product_categories")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -54,12 +106,24 @@ func (h *ProductHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
 		Template   string
 		Products   []models.Product
 		Categories []models.ProductCategory
+		Filters    struct {
+			ProductName string
+			CategoryID  string
+			Status      string
+		}
 	}{
 		Title:      "Product List",
 		Template:   "list-products",
 		Products:   products,
 		Categories: categories,
 	}
+
+	data.Filters.ProductName = productName
+	data.Filters.CategoryID = categoryIDStr
+	data.Filters.Status = statusStr
+
+	// TODO: delete this
+	log.Printf("Data: %+v\n", data)
 
 	utils.RenderTemplate(w, "base.html", data)
 }

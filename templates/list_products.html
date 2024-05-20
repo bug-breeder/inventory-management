@@ -10,6 +10,7 @@
             type="text"
             name="product_name"
             placeholder="Product Name"
+            value="{{.Filters.ProductName}}"
           />
         </div>
       </div>
@@ -19,9 +20,17 @@
           <div class="select">
             <select name="category_id">
               <option value="">All Categories</option>
-              {{ range.Categories }}
-              <option value="{{.ID}}">{{.CategoryName}}</option>
-              {{ end }}
+              {{range .Categories}}
+              <option
+                value="{{.ID}}"
+                {{if
+                eq
+                (print .ID)
+                $.Filters.CategoryID}}selected{{end}}
+              >
+                {{.CategoryName}}
+              </option>
+              {{end}}
             </select>
           </div>
         </div>
@@ -32,8 +41,8 @@
           <div class="select">
             <select name="status">
               <option value="">All Status</option>
-              <option value="true">Active</option>
-              <option value="false">Inactive</option>
+              <option value="true" {{if eq $.Filters.Status "true"}}selected{{end}}>Active</option>
+              <option value="false" {{if eq $.Filters.Status "false"}}selected{{end}}>Inactive</option>
             </select>
           </div>
         </div>
@@ -43,7 +52,7 @@
           <button class="button is-link" type="submit">Filter</button>
         </div>
         <div class="control">
-          <a class="button is-light" href="/list">Reset</a>
+          <a class="button is-light" href="/">Reset</a>
         </div>
       </div>
     </form>
