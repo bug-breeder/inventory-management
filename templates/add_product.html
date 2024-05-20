@@ -20,6 +20,7 @@
         class="input"
         type="number"
         name="unit_price"
+        step="0.01"
         placeholder="Unit Price"
         required
       />
@@ -55,13 +56,9 @@
     <div class="control">
       <div class="select">
         <select name="category_id" required>
-          {{
-            range.Categories
-          }}
+          {{ range.Categories }}
           <option value="{{.ID}}">{{.CategoryName}}</option>
-          {{
-            end
-          }}
+          {{ end }}
         </select>
       </div>
     </div>
