@@ -59,7 +59,7 @@ func (h *ProductHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
 		Categories: categories,
 	}
 
-	utils.RenderTemplate(w, "base.gohtml", data)
+	utils.RenderTemplate(w, "base.html", data)
 }
 
 func (h *ProductHandler) ShowAddProductPage(w http.ResponseWriter, r *http.Request) {
@@ -90,7 +90,7 @@ func (h *ProductHandler) ShowAddProductPage(w http.ResponseWriter, r *http.Reque
 		Categories: categories,
 	}
 
-	utils.RenderTemplate(w, "base.gohtml", data)
+	utils.RenderTemplate(w, "base.html", data)
 }
 
 func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
