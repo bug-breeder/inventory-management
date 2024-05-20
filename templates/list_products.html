@@ -3,6 +3,18 @@
   <div class="column is-one-quarter">
     <form method="GET" action="/" class="box">
       <div class="field">
+        <label class="label">Product ID</label>
+        <div class="control">
+          <input
+            class="input"
+            type="text"
+            name="product_id"
+            placeholder="Product ID"
+            value="{{.Filters.ProductID}}"
+          />
+        </div>
+      </div>
+      <div class="field">
         <label class="label">Product Name</label>
         <div class="control">
           <input

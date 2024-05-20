@@ -17,6 +17,7 @@ type ProductHandler struct {
 
 func (h *ProductHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
 	// Read query parameters
+	productIDStr := r.URL.Query().Get("product_id")
 	productName := r.URL.Query().Get("product_name")
 	categoryIDStr := r.URL.Query().Get("category_id")
 	statusStr := r.URL.Query().Get("status")
@@ -27,8 +28,17 @@ func (h *ProductHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
 	var conditions []string
 
 	// Add conditions based on the provided filters
+	if productIDStr != "" {
+		productID, err := strconv.ParseInt(productIDStr, 10, 32)
+		if err != nil {
+			log.Printf("Error converting status to int: %v\n", err)
+		} else {
+			conditions = append(conditions, "id = $")
+			args = append(args, productID)
+		}
+	}
 	if productName != "" {
-		conditions = append(conditions, "product_name ILIKE $")
+		conditions = append(conditions, "product_search @@ plainto_tsquery('simple', $")
 		args = append(args, "%"+productName+"%")
 	}
 	if categoryIDStr != "" {
@@ -54,6 +64,10 @@ func (h *ProductHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
 	if len(conditions) > 0 {
 		for i, condition := range conditions {
 			query += " AND " + condition + strconv.Itoa(i+1)
+			// special case for full-text search
+			if condition == "product_search @@ plainto_tsquery('simple', $" {
+				query += ")"
+			}
 		}
 	}
 
@@ -100,6 +114,7 @@ func (h *ProductHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
 		Products   []models.Product
 		Categories []models.ProductCategory
 		Filters    struct {
+			ProductID   string
 			ProductName string
 			CategoryID  string
 			Status      string
@@ -111,6 +126,7 @@ func (h *ProductHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
 		Categories: categories,
 	}
 
+	data.Filters.ProductName = productIDStr
 	data.Filters.ProductName = productName
 	data.Filters.CategoryID = categoryIDStr
 	data.Filters.Status = statusStr
