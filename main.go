@@ -20,16 +20,17 @@ func main() {
 	defer db.Close()
 
 	// Run migrations
-	err = db.RunMigrations("file://db/migrations")
-	if err != nil {
-		log.Fatalf("Failed to run migrations: %v", err)
-	}
+	// err = db.RunMigrations("file://db/migrations")
+	// if err != nil {
+	// 	log.Fatalf("Failed to run migrations: %v", err)
+	// }
 
 	// Initilize cache
 	utils.InitCache()
 
 	router := mux.NewRouter()
-	// Log all requests
+
+	// Log all requests only for debugging
 	// router.Use(utils.LoggingMiddleware)
 
 	productHandler := &handlers.ProductHandler{DB: db.DB}
