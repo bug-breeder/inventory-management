@@ -134,7 +134,7 @@ func (h *ProductHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
 		Categories: categories,
 	}
 
-	data.Filters.ProductName = productIDStr
+	data.Filters.ProductID = productIDStr
 	data.Filters.ProductName = productName
 	data.Filters.CategoryID = categoryIDStr
 	data.Filters.Status = statusStr
