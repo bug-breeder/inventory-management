@@ -39,7 +39,7 @@ func (h *ProductHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if productName != "" {
-		conditions = append(conditions, "product_search @@ plainto_tsquery('simple', $")
+		conditions = append(conditions, "product_search @@ plainto_tsquery('simple', unaccent($")
 		args = append(args, "%"+productName+"%")
 	}
 	if categoryIDStr != "" {
@@ -66,8 +66,8 @@ func (h *ProductHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
 		for i, condition := range conditions {
 			query += " AND " + condition + strconv.Itoa(i+1)
 			// special case for full-text search
-			if condition == "product_search @@ plainto_tsquery('simple', $" {
-				query += ")"
+			if condition == "product_search @@ plainto_tsquery('simple', unaccent($" {
+				query += "))"
 			}
 		}
 	}

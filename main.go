@@ -36,7 +36,6 @@ func main() {
 	categoryHandler := &handlers.CategoryHandler{DB: db.DB}
 
 	router.HandleFunc("/", productHandler.ListProducts).Methods("GET")
-	router.HandleFunc("/products", productHandler.CreateProduct).Methods("POST")
 	router.HandleFunc("/categories", categoryHandler.GetCategories).Methods("GET")
 	router.HandleFunc("/add-product", productHandler.ShowAddProductPage).Methods("GET")
 	router.HandleFunc("/add-product", productHandler.CreateProduct).Methods("POST")
