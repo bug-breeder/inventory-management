@@ -25,6 +25,9 @@ func main() {
 		log.Fatalf("Failed to run migrations: %v", err)
 	}
 
+	// Initilize cache
+	utils.InitCache()
+
 	router := mux.NewRouter()
 	// Log all requests
 	// router.Use(utils.LoggingMiddleware)

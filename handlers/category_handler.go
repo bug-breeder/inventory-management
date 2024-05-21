@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"net/http"
 	"product_app/models"
+	"product_app/utils"
+
+	"github.com/patrickmn/go-cache"
 )
 
 type CategoryHandler struct {
@@ -12,6 +15,12 @@ type CategoryHandler struct {
 }
 
 func (h *CategoryHandler) GetCategories(w http.ResponseWriter, r *http.Request) {
+	cachedCategories, found := utils.Cache.Get("categories")
+	if found {
+		json.NewEncoder(w).Encode(cachedCategories)
+		return
+	}
+
 	var categories []models.ProductCategory
 	rows, err := h.DB.Query("SELECT * FROM product_categories")
 	if err != nil {
@@ -29,5 +38,6 @@ func (h *CategoryHandler) GetCategories(w http.ResponseWriter, r *http.Request) 
 		categories = append(categories, c)
 	}
 
+	utils.Cache.Set("categories", categories, cache.DefaultExpiration)
 	json.NewEncoder(w).Encode(categories)
 }

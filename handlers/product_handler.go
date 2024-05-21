@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/patrickmn/go-cache"
 )
 
 type ProductHandler struct {
@@ -93,20 +94,26 @@ func (h *ProductHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var categories []models.ProductCategory
-	rows, err = h.DB.Query("SELECT id, category_name FROM product_categories")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var c models.ProductCategory
-		if err := rows.Scan(&c.ID, &c.CategoryName); err != nil {
+	cachedCategories, found := utils.Cache.Get("categories")
+	if found {
+		categories = cachedCategories.([]models.ProductCategory)
+	} else {
+		rows, err = h.DB.Query("SELECT id, category_name FROM product_categories")
+		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		categories = append(categories, c)
+		defer rows.Close()
+
+		for rows.Next() {
+			var c models.ProductCategory
+			if err := rows.Scan(&c.ID, &c.CategoryName); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			categories = append(categories, c)
+		}
+		utils.Cache.Set("categories", categories, cache.DefaultExpiration)
 	}
 
 	data := struct {
