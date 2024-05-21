@@ -9,7 +9,6 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/patrickmn/go-cache"
 )
 
 type ProductHandler struct {
@@ -93,27 +92,11 @@ func (h *ProductHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
 		products = append(products, p)
 	}
 
-	var categories []models.ProductCategory
-	cachedCategories, found := utils.Cache.Get("categories")
-	if found {
-		categories = cachedCategories.([]models.ProductCategory)
-	} else {
-		rows, err = h.DB.Query("SELECT id, category_name FROM product_categories")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		defer rows.Close()
-
-		for rows.Next() {
-			var c models.ProductCategory
-			if err := rows.Scan(&c.ID, &c.CategoryName); err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-			categories = append(categories, c)
-		}
-		utils.Cache.Set("categories", categories, cache.DefaultExpiration)
+	categories, err := GetCategories(h.DB)
+	if err != nil {
+		log.Printf("Error fetching categories: %v\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	data := struct {
@@ -143,21 +126,11 @@ func (h *ProductHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ProductHandler) ShowAddProductPage(w http.ResponseWriter, r *http.Request) {
-	var categories []models.ProductCategory
-	rows, err := h.DB.Query("SELECT * FROM product_categories")
+	categories, err := GetCategories(h.DB)
 	if err != nil {
+		log.Printf("Error fetching categories: %v\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var c models.ProductCategory
-		if err := rows.Scan(&c.ID, &c.CategoryName); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		categories = append(categories, c)
 	}
 
 	data := struct {
@@ -212,21 +185,11 @@ func (h *ProductHandler) ShowEditProductPage(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	var categories []models.ProductCategory
-	rows, err := h.DB.Query("SELECT * FROM product_categories")
+	categories, err := GetCategories(h.DB)
 	if err != nil {
+		log.Printf("Error fetching categories: %v\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var c models.ProductCategory
-		if err := rows.Scan(&c.ID, &c.CategoryName); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		categories = append(categories, c)
 	}
 
 	data := struct {
