@@ -99,22 +99,30 @@ func (h *ProductHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Create a map of category ID to category name
+	categoryMap := make(map[int]string)
+	for _, category := range categories {
+		categoryMap[category.ID] = category.CategoryName
+	}
+
 	data := struct {
-		Title      string
-		Template   string
-		Products   []models.Product
-		Categories []models.ProductCategory
-		Filters    struct {
+		Title       string
+		Template    string
+		Products    []models.Product
+		Categories  []models.ProductCategory
+		CategoryMap map[int]string
+		Filters     struct {
 			ProductID   string
 			ProductName string
 			CategoryID  string
 			Status      string
 		}
 	}{
-		Title:      "Product List",
-		Template:   "list-products",
-		Products:   products,
-		Categories: categories,
+		Title:       "Product List",
+		Template:    "list-products",
+		Products:    products,
+		CategoryMap: categoryMap,
+		Categories:  categories,
 	}
 
 	data.Filters.ProductID = productIDStr

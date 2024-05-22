@@ -92,7 +92,7 @@
           <td>{{.UnitPrice}}</td>
           <td>{{.Unit}}</td>
           <td>{{.Weight}}</td>
-          <td>{{.CategoryID}}</td>
+          <td>{{index $.CategoryMap .CategoryID}}</td>
           <td>{{if .Status}}Active{{else}}Inactive{{ end }}</td>
           <td>
             <a href="/edit-product/{{.ID}}" class="button is-small is-info"
