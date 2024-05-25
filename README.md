@@ -1,4 +1,4 @@
-# Simple App
+# Product Manager App
 
 ## Table of Contents
 
