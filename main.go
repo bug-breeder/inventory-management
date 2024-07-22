@@ -36,6 +36,10 @@ func main() {
 	productHandler := &handlers.ProductHandler{DB: db.DB}
 	categoryHandler := &handlers.CategoryHandler{DB: db.DB}
 
+	// Serve static files
+	fs := http.FileServer(http.Dir("./public"))
+	router.PathPrefix("/public/").Handler(http.StripPrefix("/public/", fs))
+
 	router.HandleFunc("/", productHandler.ListProducts).Methods("GET")
 	router.HandleFunc("/categories", categoryHandler.GetCategories).Methods("GET")
 	router.HandleFunc("/add-product", productHandler.ShowAddProductPage).Methods("GET")

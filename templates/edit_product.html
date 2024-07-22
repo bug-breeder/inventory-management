@@ -28,8 +28,6 @@
 
 <h1 class="title">{{.Title}}</h1>
 <form class="box" id="productForm">
-  <!-- <input type="hidden" name="_method" value="PATCH" /> -->
-
   <div class="field">
     <label class="label">Product Name</label>
     <div class="control">
@@ -88,10 +86,7 @@
           {{range .Categories}}
           <option
             value="{{.ID}}"
-            {{if
-            eq
-            .ID
-            $.Product.CategoryID}}selected{{end}}
+            {{if eq .ID $.Product.CategoryID}}selected{{end}}
           >
             {{.CategoryName}}
           </option>
@@ -116,9 +111,35 @@
     </div>
   </div>
   <div class="field">
+    <label class="label">Image URL</label>
+    <div class="control">
+      <input
+        class="input"
+        type="text"
+        name="image_url"
+        value="{{.Product.ImageURL}}"
+        required
+      />
+    </div>
+  </div>
+  <div class="field">
+    <label class="label">Description</label>
+    <div class="control">
+      <textarea
+        class="textarea"
+        name="description"
+        required
+      >{{.Product.Description}}</textarea>
+    </div>
+  </div>
+  <div class="field is-grouped">
     <div class="control">
       <button class="button is-link" type="submit">Save Changes</button>
+    </div>
+    <div class="control">
+      <a class="button is-light" href="/">Cancel</a>
     </div>
   </div>
 </form>
 {{end}}
+

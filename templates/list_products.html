@@ -35,10 +35,7 @@
               {{range .Categories}}
               <option
                 value="{{.ID}}"
-                {{if
-                eq
-                (print .ID)
-                $.Filters.CategoryID}}selected{{end}}
+                {{if eq (print .ID) $.Filters.CategoryID}}selected{{end}}
               >
                 {{.CategoryName}}
               </option>
@@ -70,39 +67,61 @@
     </form>
   </div>
   <div class="column">
-    <h1 class="title">Product List</h1>
-    <table class="table is-fullwidth is-striped">
-      <thead>
-        <tr>
-          <th>Product ID</th>
-          <th>Product Name</th>
-          <th>Unit Price</th>
-          <th>Unit</th>
-          <th>Weight</th>
-          <th>Category</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{ range.Products }}
-        <tr>
-          <td>{{.ID}}</td>
-          <td>{{.ProductName}}</td>
-          <td>{{.UnitPrice}}</td>
-          <td>{{.Unit}}</td>
-          <td>{{.Weight}}</td>
-          <td>{{index $.CategoryMap .CategoryID}}</td>
-          <td>{{if .Status}}Active{{else}}Inactive{{ end }}</td>
-          <td>
-            <a href="/edit-product/{{.ID}}" class="button is-small is-info"
-              ><i class="fas fa-edit"></i
-            ></a>
-          </td>
-        </tr>
-        {{ end }}
-      </tbody>
-    </table>
+    <div class="columns is-multiline">
+      {{range .Products}}
+      <div class="column is-one-third">
+        <div class="card product-card">
+          <div class="card-image">
+            <figure class="image is-4by3">
+              <img src="{{.ImageURL}}" alt="{{.ProductName}}">
+            </figure>
+          </div>
+          <div class="card-content">
+            <div class="media">
+              <div class="media-content">
+                <p class="title is-5">{{.ProductName}}</p>
+                <p class="subtitle is-6">{{index $.CategoryMap .CategoryID}}</p>
+              </div>
+            </div>
+            <div class="content">
+              <p>{{.Description}}</p>
+              <p><strong>Price:</strong> ${{.UnitPrice}}</p>
+              <!-- <p><strong>Unit:</strong> {{.Unit}}</p> -->
+              <!-- <p><strong>Weight:</strong> {{.Weight}}</p> -->
+              <!-- <p><strong>Status:</strong> {{if .Status}}Active{{else}}Inactive{{end}}</p> -->
+            </div>
+          </div>
+          <footer class="card-footer">
+            <a href="/edit-product/{{.ID}}" class="card-footer-item">Edit</a>
+          </footer>
+        </div>
+      </div>
+      {{end}}
+    </div>
   </div>
 </div>
-{{ end }}
+
+<style>
+
+  .product-card .card-image {
+    padding: 15px;
+  }
+
+  .product-card .image img {
+    object-fit: cover;
+  }
+
+  .product-card .card-content {
+    padding: 10px;
+  }
+
+  .product-card .content p {
+    margin: 5px 0;
+  }
+
+  .card-footer-item {
+    text-align: center;
+  }
+</style>
+{{end}}
+
